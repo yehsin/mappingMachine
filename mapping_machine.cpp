@@ -1,196 +1,6 @@
 #include<iostream>
-<<<<<<< HEAD
+#include<fstream>
 #include<iomanip>
-#include<fstream>
-#define inf 100
-using namespace std;
-class position{
-    friend class map;
-    private:
-        char val;//'0'dust   '1'wall   'C'cleaned
-        int dist;//dist from R to every position
-        int row;//row=r
-        int col;//col=c
-        int dist_s;//dist from selected node to every position
-};
-class map{
-    private:
-        position **arr;
-        int rows;
-        int cols;
-        int cur_B;
-        int max_B;
-        position *R;//recharge 
-        position *C;//cleaner
-        bool found_path;//if find the shortest from u to v set true else keep searching
-        position *keep_path;//keep the shortest path from u to v
-    public:
-        map(){
-            //intitialization
-            ofstream fo;
-            ifstream fh("floor.data");
-            fo.open;
-            fh>>rows>>cols>>max_B;
-            cur_B=max_B;
-            arr=new position*[rows];
-            for(int r=0;r<rows;r++){
-                arr[r]=new position[cols];
-            }
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    fh>>arr[r][c].val;
-                    arr[r][c].row=r;
-                    arr[r][c].col=c;
-                    arr[r][c].dist=inf;
-                    if(arr[r][c].val=='R'){
-                        R=&arr[r][c];
-                        C=R;
-                    }
-                }
-            }
-
-            fh.close();
-            fo.close();
-            set_dist(R,0);
-
-            //bad algorithm 
-            //go through every position that have not be cleared.
-            fo<<C->row<<" "<<C->col<<" Battery:"<<cur_B<<endl;
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    if(arr[r][c].val=='0'){
-                        print(C->row,C->col);
-                        if(arr[r][c].dist>cur_B-arr[r][c].dist_s){
-                            go(*R);
-                            print(C->row,C->col);
-                        }
-                        go(arr[r][c]);
-                    }
-                }
-            }
-            print(C->row,C->col);
-            go(*R);
-
-        }
-        
-
-        void set_dist(position *p,int d){
-            if(p->val=='1'){
-                return;
-            }
-            else{
-                if(d<p->dist){
-                    p->dist=d;
-                    if(p->row+1<rows)
-                        set_dist(&arr[p->row+1][p->col],d+1);
-                    if(p->col+1<cols)
-                        set_dist(&arr[p->row][p->col+1],d+1);
-                    if(p->row-1>=0)
-                        set_dist(&arr[p->row-1][p->col],d+1);
-                    if(p->col-1>=0)
-                        set_dist(&arr[p->row][p->col-1],d+1);
-                }
-            }
-        }
-        
-        void print(int r,int c){
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    arr[r][c].dist_s=inf;
-                }
-            }
-            set_dist_s(&arr[r][c],0);
-        }
-        void set_dist_s(position *p,int d){
-            if(p->val=='1'){
-                return;
-            }
-            else{
-                if(d<p->dist_s){
-                    p->dist_s=d;
-                    if(p->row+1<rows)
-                        set_dist_s(&arr[p->row+1][p->col],d+1);
-                    if(p->col+1<cols)
-                        set_dist_s(&arr[p->row][p->col+1],d+1);
-                    if(p->row-1>=0)
-                        set_dist_s(&arr[p->row-1][p->col],d+1);
-                    if(p->col-1>=0)
-                        set_dist_s(&arr[p->row][p->col-1],d+1);
-                }
-            }
-        }
-        //最短路徑
-        void go(position v){
-            found_path=false;
-            keep_path=new position[v.dist_s];
-            go_allpath(*C,v);
-            if(C->row==R->row&&C->col==R->col){
-                cur_B=max_B;
-            }
-        }
-        void go_allpath(position u,position v){
-            if(u.row==v.row&&u.col==v.col){
-                found_path=true;
-                keep_path[u.dist_s].row=v.row;
-                keep_path[u.dist_s].col=u.col;
-                C=&arr[v.row][v.col];
-                for(int i=1;i<=v.dist_s;i++){
-                    arr[keep_path[i].row][keep_path[i].col].val='C';
-                    cur_B--;
-                    fo<<keep_path[i].row<<" "<<keep_path[i].col<<" Battery:"<<cur_B<<endl;
-                }
-                return;
-            }
-            else{
-                if(u.row+1<rows&&u.dist_s+1==arr[u.row+1][u.col].dist_s&&found_path==false){
-                    keep_path[u.dist_s].row=u.row;
-                    keep_path[u.dist_s].col=u.col;
-                    go_allpath(arr[u.row+1][u.col],v);
-                }
-                if(u.col+1<cols&&u.dist_s+1==arr[u.row][u.col+1].dist_s&&found_path==false){
-                    keep_path[u.dist_s].row=u.row;
-                    keep_path[u.dist_s].col=u.col;
-                    go_allpath(arr[u.row][u.col+1],v);
-                }
-                if(u.row-1<rows&&u.dist_s+1==arr[u.row-1][u.col].dist_s&&found_path==false){
-                    keep_path[u.dist_s].row=u.row;
-                    keep_path[u.dist_s].col=u.col;
-                    go_allpath(arr[u.row-1][u.col],v);
-                }
-                if(u.row-1<cols&&u.dist_s+1==arr[u.row][u.col-1].dist_s&&found_path==false){
-                    keep_path[u.dist_s].row=u.row;
-                    keep_path[u.dist_s].col=u.col;
-                    go_allpath(arr[u.row][u.col-1],v);
-                }
-            }
-        }
-        //外掛程式
-        void print_map(){
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    fo<<arr[r][c].val;
-                }
-                fo<<'\n';
-            }
-        }
-
-        void print_dist(){
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    fo<<setw(5)<<arr[r][c].dist;
-                }
-                fo<<'\n';
-            }
-        }
-
-        void print_dist_s(){
-            for(int r=0;r<rows;r++){
-                for(int c=0;c<cols;c++){
-                    fo<<setw(5)<<arr[r][c].dist_s;
-                }
-                fo<<'\n';
-=======
-#include<fstream>
 using namespace std;
 
 //if cost is same, go straight or 
@@ -209,22 +19,25 @@ class treenode{
     friend class map;
     friend class Traveltree;
     private:
-        int cost; // the step that the node distance from R
+        int cost = 10000; // the step that the node distance from R
         int type;
-        int ID = 0;
+        int ID = -1;
+        int row,column;
         bool cleaned;
         treenode *up,*down,*left,*right;
     public:
-    treenode();
-    treenode(int type):type(type),cleaned(0){
+    treenode(){
+        up = down = left = right = NULL;
+    };
+    /*treenode(int type):type(type),cleaned(0){
         if(type);
         else{
             cleaned =1;
             cost = -1;
         } 
 
-    }
-    ~treenode();
+    }*/
+    ~treenode(){};
     treenode * getup(){
         return this->up;
     }
@@ -236,6 +49,12 @@ class treenode{
     }
     treenode * getright(){
         return this->right;
+    }
+    int getrow(){
+        return this->row;
+    }
+    int getcol(){
+        return this->column;
     }
     int gettype(){
         return this->type;
@@ -306,95 +125,287 @@ class treenode{
             }
         }
 };*/
-
+static int id;
 class map{
     friend class machine;
     private:
-        treenode ***floor;
+        treenode **floor;
         treenode *Root;
         int *notCleanBuf;
         int width,heigh;
     public:
+         
         map(int n,int m,char *arr){
-            notCleanBuf = new int(n*m);
+            
+            notCleanBuf = new int[m*n];
             width = n;
             heigh = m;
             //build_floor(arr);
-            floor = new treenode**[n];
-            for (int i=0;i<width;i++){
-                floor[i] = new treenode*[heigh];
-                for(int j = 0;j<heigh;j++){
-                    notCleanBuf[i*width+j] = 1;
-                    int type = *(arr+i*width+j)-'0';
-                    floor[i][j] = new treenode(type);
+            
+            floor = new treenode*[heigh];
+            for (int i=0;i<heigh;i++){
+                floor[i]=new treenode[width];
+                for(int j = 0;j<width;j++){
+                    floor[i][j].type = 1;
+                    //puts("O");
+                    notCleanBuf[i*heigh+j] = 1;
+                    /*puts("DD");*/
+                    int type = *(arr+i*heigh+j)-'0';
+                    //cout<<type<<" ";
+                    //puts("WW");
+                    floor[i][j].type=type;
+                    //puts("QQ");
+                    if(floor[i][j].type == 1){
+                        floor[i][j].cleaned = 1;
+                        floor[i][j].cost = -1;
+                    }
+                    floor[i][j].row = i;
+                    floor[i][j].column = j;
+                    //cout<<floor[i][j].row<<" ";
                     if(type == 'R'-'0'){
-                        Root = floor[i][j];
-                        Root->type = 'R';
+                        Root = &(floor[i][j]);
+                        Root->type = 'R'; 
+                        Root->cost = 0 ; 
                     }
                 }
-            }   
-            build_tree((treenode*) *floor);
+            }
+            //puts("F");  
+            build_tree(*floor);
         }
         ~map(){
             for(int i=0;i<width;i++){
-                for(int j=0;j<heigh;j++){
-                    delete[] floor[i][j];
-                }
+                delete[] floor[i];
             }
             delete[] floor;
             delete[] notCleanBuf;
         }
         void build_tree(treenode *a){
-            for(int i = 1;i<width-1;i++){
-                for(int j=1;j<heigh-1;j++){
-                    if(floor[i-1][j]->type!=1) floor[i][j]->up = floor[i-1][j];
-                    else floor[i][j]->up = NULL;
-                    if(floor[i+1][j]->type !=1) floor[i][j]->down = floor[i+1][j];
-                    else floor[i][j]->down = NULL;
-                    if(floor[i][j+1]->type !=1) floor[i][j]->right = floor [i][j+1];
-                    else floor[i][j]->right = NULL;
-                    if(floor[i][j-1]->type !=1) floor[i][j]->left = floor[i][j-1];
-                    else floor[i][j]->left = NULL;
+            for(int i=1;i<heigh-1;i++){
+                //puts("II");
+
+                for(int j=1;j<width-1;j++){
+                    if(floor[i-1][j].type!=1) {
+                        floor[i][j].up = &(floor[i-1][j]);
+                        if(floor[i][j].up == Root){
+                            Root->down = &(floor[i][j]);
+                        }
+                    }
+                    else {
+                        floor[i][j].up = NULL;
+                        //puts("UU");
+                    }
+                    if(floor[i+1][j].type !=1) {
+                        floor[i][j].down = &(floor[i+1][j]);
+                        if(floor[i][j].down == Root){
+                            Root->up = &(floor[i][j]);
+                        }
+                    }
+                    else {
+                        floor[i][j].down = NULL;
+                        //puts("DD");
+                    }
+                    if(floor[i][j+1].type !=1) {
+                        floor[i][j].right = &(floor[i][j+1]);
+                        if(floor[i][j].right == Root){
+                            Root->left = &(floor[i][j]);
+                        }
+                    }
+                    else {
+                        floor[i][j].right = NULL;
+                        //puts("RR");
+                    }
+                    if(floor[i][j-1].type !=1) {
+                        floor[i][j].left = &(floor[i][j-1]);
+                        if(floor[i][j].left == Root){
+                            Root->right = &(floor[i][j]);
+                        }
+                    }
+                    else {
+                        floor[i][j].left = NULL;
+                        //puts("LL");
+                    }
                 }
+                //puts("KK");
             }
+            //puts("PP");
             BSF(&Root,0);
+            buildTravelTree();
+            /*for(int i=0;i<heigh;i++){
+                for(int j = 0;j<width;j++){
+                    cout<<floor[i][j].ID<<setw(10);
+                }
+                cout<<endl;
+            }*/
         }
         void BSF(treenode ** a,int cost){
-            if((*a)->getcost()>cost){
-                (*a)->setcost(cost);
-            }
-            if((*a)->getup()){
+            (*a)->setcost(cost);
+            //cout<<"R"<<Root->getcost();
+            //puts("1");
+            if((*a)->getup()!=NULL && (*a)->up->type!=1 && (*a)->up->cost>cost+1){
+                //puts("2");
                 treenode *up = (*a)->getup();
                 BSF(&up,cost+1);
-            } 
-            if((*a)->getright()){
+                //cout<<"R"<<Root->getID()<<" "<<endl;
+                //puts("2 Over");    
+            }
+            if((*a)->getright()!=NULL && (*a)->right->type!=1 && (*a)->right->cost>cost+1){
+                //puts("3");
                 treenode *right = (*a)->getright();
                 BSF(&right,cost+1);
+                //puts("3 Over");
+                
             } 
-            if((*a)->getdown()){
+            if((*a)->getdown()!=NULL && (*a)->down->type!=1 && (*a)->down->cost>cost+1){
+                //puts("4");
                 treenode *down = (*a)->getdown();
                 BSF(&down,cost+1);
+                //puts("4 Over");
             } 
-            if((*a)->getleft()){
+            if((*a)->getleft()!=NULL && (*a)->left->type!=1 && (*a)->left->cost>cost+1){
+                //puts("5");
                 treenode *left = (*a)->getleft();
-                BSF(&left,cost+1);
-            } 
+                BSF(&left,cost+1); 
+            }
+            
+            return;
+            
         }
-        /*void buildTravelTree(treenode **a){
-            int i = 0;
+        
+        void buildTravelTree(){
+            //treenode *tmp = &(floor[i][j]);
+            int R = 0;
             int j = 0;
-            while(floor[i][j]->type){
-                i++;
-                if(i == heigh-1){
-                    i = 0;
+            while(R<heigh){
+                //cout<<R;
+                while(floor[R][j].type ==1){
                     j++;
+                    if(j == width){
+                        R++;
+                        j = 0;
+                        id++;
+                        
+                    }
+                    //cout<<R<<heigh;
+                    if(R == heigh) break;
+                }
+                if(R == heigh) break;
+                //cout<<R;
+                buildLevel(&floor[R][j]);
+                R++;
+                j=0;
+                id++;
+
+            }
+            R = 0;
+            j = 0;
+            id = 0;
+            while(R<heigh){  //再檢查一次把沒被設ID的設值
+                while(floor[R][j].type ==1){
+                    j++;
+                    if(j == width){
+                        R++;
+                        j = 0;
+                        id++;   
+                    }
+                    if(R == heigh) break;
+                }
+                if(R == heigh) break;
+                //cout<<R;
+                buildLevelCheck(&floor[R][j]);
+                R++;
+                j=0;
+                id++;
+
+            }
+
+
+
+
+
+
+        }
+        void buildLevel(treenode *tmp){
+            tmp->ID = id;
+            if(tmp->left){
+                treenode *left_tmp = tmp->left;
+                while(left_tmp){
+                    left_tmp->ID = id;
+                    if(left_tmp->up){
+                        if(left_tmp->up->ID<left_tmp->ID);
+                        else buildLevel(left_tmp->up);
+                    }
+                    left_tmp = left_tmp->left;
                 }
             }
-            treenode *tmp = floor[i][j];
-            while(tmp){
-                
+            if(tmp->right){
+                treenode *right_tmp = tmp->right;
+                while(right_tmp){
+                    right_tmp->ID = id;
+                    if(right_tmp->up){
+                        if(right_tmp->up->ID<right_tmp->ID);
+                        else buildLevel(right_tmp->up);
+                        
+                    }
+                    right_tmp = right_tmp->right;
+                }
             }
-        }*/
+            if(tmp->up){
+                if(tmp->up->ID<tmp->ID);
+                else{
+                    buildLevel(tmp->up);
+                }
+            }
+        }
+
+        void buildLevelCheck(treenode *tmp){
+            tmp->ID = id;
+            //cout<<id<<"ID"<<endl;
+            if(tmp->left){
+                treenode *left_tmp = tmp->left;
+                while(left_tmp){
+                    left_tmp->ID = id;
+                    if(left_tmp->up){
+                        if(left_tmp->up->ID!=-1);
+                        else buildLevelCheck(left_tmp->up);
+                    }
+                    if(left_tmp->down){
+                        if(left_tmp->down->ID!=-1);
+                        else buildLevelCheck(left_tmp->down);
+                    }
+                    left_tmp = left_tmp->left;
+                }
+            }
+            if(tmp->right){
+                treenode *right_tmp = tmp->right;
+                while(right_tmp){
+                    right_tmp->ID = id;
+                    if(right_tmp->up){
+                        if(right_tmp->up->ID!=-1);
+                        else buildLevelCheck(right_tmp->up);
+                        
+                    }
+                    if(right_tmp->down){
+                        if(right_tmp->down->ID!=-1);
+                        else buildLevelCheck(right_tmp->down);
+                    }
+                    right_tmp = right_tmp->right;
+                }
+            }
+            if(tmp->up){
+                if(tmp->up->ID!=-1);
+                else{
+                    buildLevelCheck(tmp->up);
+                }
+            }
+            if(tmp->down){
+                if(tmp->down->ID != -1);
+                else{
+                    buildLevelCheck(tmp->down);
+                }
+            }
+        }
+                
+
         int getwidth(){
             return width;
         }
@@ -420,204 +431,450 @@ class machine{
         
         void clean(map *floor){
             int heigh = floor->getheigh();
+            int width= floor->getwidth();
             int row=0;
             int columns =0;
-            //Traveltree maptree(floor->floor[0][0]);
             treenode* tmp = floor->Root;
+            tmp->setcleaned(1);
             cleaner = tmp;
             int Row = tmp->getID();
-            /*while(floor->floor[row][columns]->gettype() == 1){
-                columns++;
-                if(columns == floor->getwidth()-1){
-                    columns =0;
-                    row++;
-                }
-                tmp = floor->floor[row][columns];
-            }//找到最上面的點了*/
-            while(Row >= 0){
+            //cout<<Row<<endl;
+            while(Row > 0){
                 cleanRow(&tmp,Row);
+                puts("MINMIN");
                 Row--;
-                
             }
-            backToRoot(&tmp);
-            while(Row!=heigh){
-                
-                Row++;
+            
+            int home = backToRoot(&tmp);
+            //cout<<tmp->getrow()<<" "<<power<<endl;
+            puts("SS");
+            Row = tmp->getID()+1;
+            while(Row<heigh){
                 cleanRow(&tmp,Row);
-                
+                //cout<<tmp->getID();
+                puts("OK!");
+                Row++;
             }
-            backToRoot(&tmp);
+            //cout<<tmp->getrow()<<" "<<power<<endl;
+            if(tmp->getcost() != 0){
+                home =backToRoot(&tmp);
+            }
+            
         }
 
         void isRefresh(treenode*tmp){
+            cout<<tmp->getrow()<<" "<<tmp->getcol()<<" "<<power<<endl;
             if(tmp->getcost() == power){
+
+                cout<<tmp->getID();
                 int step = backToRoot(&tmp);
                 backToNode(&tmp,buf,step);
             }
         }
 
         void cleanRow(treenode **tmp,int Row){
+            treenode *cur = *tmp;
+            int uuu=0;
+            if(cur->getID()!= Row){
+                if(Row > cur->getID()){ //往下調
+                    while(cur->getID() != Row){
+                        if(cur->getdown() && cur->getdown()->getID() == Row){
+                            cur = cur->getdown();
+                            cur->setcleaned(1);
+                            power--;
+                            isRefresh(cur);
+                        }
+                        else if(cur->getleft() && uuu==0){ //左看看
+                            cur = cur->getleft();
+                            power--;
+                            isRefresh(cur);
+                            if(cur->getleft()->getleft() ==NULL) uuu=1;
+                        }
+                        
+                        else if(cur->getright()){ //右看看
+                            cur = cur->getright();
+                            power--;
+                            isRefresh(cur);
+                        }
+                        if(cur->getright() == NULL) return;
+                    }
+                } 
+
+                else if(Row <cur->getID()){ // 往上調
+                    //puts("UP");
+                    //cout<<cur->getID();
+                    while(cur->getID()!=Row){
+                        if(cur->getup() && cur->getup()->getID() == Row){
+                            //puts("UP");
+                            cur = cur->getup();
+                            cur->setcleaned(1);
+                            power--;
+                            isRefresh(cur);
+                        }
+                        else if(cur->getleft()){
+                            cur = cur->getleft();
+                            power--;
+                            isRefresh(cur);
+                        }
+                        else if(cur->getright()){
+                            cur = cur->getright();
+                            power--;
+                            isRefresh(cur);
+                        }
+                    }
+                }
+
+            } 
+            //調整到Row
+            //先走左邊再走右邊//最後要回到一開始的點
+            //如果遇到往上或往下=>走然後遞迴//走完回來
+            
+            treenode *record = cur;//記錄這個點
+            if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
+                cur = cur->getup();
+                cur->setcleaned(1);
+                power--;
+                isRefresh(cur);
+                cleanRow(&cur,Row);
+                cur = cur->getdown();
+                power--;
+                isRefresh(cur);
+            }
+            
+
+            if(cur->getleft() && cur->getleft()->getID() == Row ){
+                while(cur->getleft()){
+                    cur = cur->getleft();
+                    cur->setcleaned(1);
+                    power--;
+                    isRefresh(cur);
+
+                    if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
+                        cur = cur->getup();
+                        cur->setcleaned(1);
+                        isRefresh(cur);
+
+                        cleanRow(&cur,Row);
+                        cur = cur->getdown();
+                        power--;
+                        isRefresh(cur);
+
+                    }
+                    if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() == 0){
+                        cur = cur->getdown();
+                        cur->setcleaned(1);
+                        power--;
+                        isRefresh(cur);
+
+                        cleanRow(&cur,Row);
+                        cur = cur->getup();
+                        power--;
+                        isRefresh(cur);
+
+                    }
+                }
+            }
+            while(cur != record){
+                cur = cur->getright();
+                power--;
+                isRefresh(cur);
+            }
+            if(cur->getright() && cur->getright()->getID()){
+                while(cur->getright()){
+                    cur = cur->getright();
+                    cur->setcleaned(1);
+                    power--;
+                    isRefresh(cur);
+                    if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
+                        cur = cur->getup();
+                        cur->setcleaned(1);
+                        power--;
+                        isRefresh(cur);
+
+                        cleanRow(&cur,Row);
+                        cur = cur->getdown();
+                        power--;
+                        isRefresh(cur);
+
+                    }
+                    if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() == 0){
+                        cur = cur->getdown();
+                        cur->setcleaned(1);
+                        power--;
+                        isRefresh(cur);
+
+                        cleanRow(&cur,Row);
+                        cur= cur->getup();
+                        power--;
+                        isRefresh(cur);
+                    }
+                }
+            }
+            while(cur != record){
+                cur = cur->getleft();
+                power--;
+                isRefresh(cur);
+            }
+            if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() ==0){
+                cur = cur->getdown();
+                cur->setcleaned(1);
+                power--;
+                isRefresh(cur);
+                cleanRow(&cur,Row);
+                cur = cur->getup();
+                power--;
+                isRefresh(cur);
+            }
+            *tmp = cur;
+            /*int back =0;
             int right=0;
             if((*tmp)->getID()!= Row){ //貼著牆壁走
+                puts("A");
                 if(Row>(*tmp)->getID()){
-                    while((*tmp)->getup()->getID()!=Row || (*tmp)->getup()==NULL){
-                        while((*tmp)->getdown()->getID() == (*tmp)->getID() && (*tmp)->getdown()){
+                    puts("B");
+                    while((*tmp)->getID()!=Row){  //往下跑
+                        if((*tmp)->getdown()){
                             (*tmp) = (*tmp)->getdown();
                             power--;
-                            isRefresh(*tmp);
-                        }
-                        if((*tmp)->getleft()!=NULL){
-                            *tmp = (*tmp)->getleft();
-                            power--;
+                            (*tmp)->setcleaned(1);
                             isRefresh(*tmp);
                         }
                     }
-
+                    cleanRow(tmp,Row);
                 }
                 else{
-                    while((*tmp)->getdown()->getID()!=Row || (*tmp)->getdown() == NULL){
-                        while((*tmp)->getdown()->getID() == (*tmp)->getID() && (*tmp)->getdown()){
-                            (*tmp) = (*tmp)->getdown();
+                    puts("C");
+                    while((*tmp)->getID()!=Row){
+                        if((*tmp)->getup() && (*tmp)->getup()->getID() == Row){
+                            (*tmp) = (*tmp)->getup();
+                            power--;
+                            cout<<"P:"<<power<<endl;
+                            (*tmp)->setcleaned(1);
+                            isRefresh(*tmp);
+
+                        }
+                        else if((*tmp)->getleft()){
+                            (*tmp) = (*tmp)->getleft();
+                            (*tmp)->setcleaned(1);
                             power--;
                             isRefresh(*tmp);
                         }
-                        if((*tmp)->getdown()==NULL){
-                            if((*tmp)->getleft()!=NULL){
-                                *tmp = (*tmp)->getleft();
-                                power--;
-                                isRefresh(*tmp);
-                            }
-                        }
+                    }
+                    cleanRow(tmp,Row);
+                }
+            }
+            if((*tmp)->getright() && (*tmp)->getright()->getID() == Row && (*tmp)->getright()->getclean() == 0) {
+                right = 1;
+                puts("E");
+            }
+            else{
+                while((*tmp)->getleft() && (*tmp)->getleft()->getID() == Row){
+                    puts("2Q");
+                    (*tmp)->setcleaned(1);
+                    *tmp = (*tmp)->getleft();
+                    power--;
+                    isRefresh(*tmp);
+                    if((*tmp)->getup() && (*tmp)->getup()->getID()==Row){
+                        puts("1Q");
+                        treenode * up = (*tmp)->getup();
+                        power--;
+                        isRefresh(*tmp);
+                        cleanRow(&up,Row);
+                        (*tmp) = (*tmp)->getdown();
+                        power--;
+                        isRefresh(*tmp);
+
+                    }
+                    if((*tmp)->getdown() && (*tmp)->getdown()->getID() == Row){
+                        puts("G");
+                        treenode * down = (*tmp)->getdown();
+                        power--;
+                        isRefresh(*tmp);
+                        cleanRow(&down,Row);
+                        (*tmp) = (*tmp)->getup();
+                        power--;
+                        isRefresh(*tmp);
+
                     }
                 }
             }
-            if((*tmp)->getright()->getID() == (*tmp)->getID()) right = 1;
-            if((*tmp)->getup()->getID()==(*tmp)->getID()){
-                treenode * up = (*tmp)->getup();
-                power--;
-                isRefresh(*tmp);
-                cleanRow(&up,Row);
-            }
-            if((*tmp)->getup()->getID() == (*tmp)->getID()){
-                treenode * down = (*tmp)->getdown();
-                power--;
-                isRefresh(*tmp);
-                cleanRow(&down,Row);
-            }
-            while((*tmp)->getleft() && (*tmp)->getleft()->getID() == (*tmp)->getID()){
-                (*tmp)->setcleaned(1);
-                power--;
-                isRefresh(*tmp);
-                *tmp = (*tmp)->getleft();
-            }
             if(right ==1){
-                while(*tmp){
-                    (*tmp)->setcleaned(1);
+                puts("F");
+                while((*tmp)->getclean() ==1){
+                    *tmp = (*tmp)->getright();
                     power--;
                     isRefresh(*tmp);
-                    *tmp = (*tmp)->getright();
+                    
+                    //(*tmp)->setcleaned(1);
                 }
-            }
+                while((*tmp)->getright()){
+                    (*tmp)->setcleaned(1);
+                    power--;
+                    (*tmp) = (*tmp)->getright();
+                    isRefresh(*tmp);
+                    back++;
+                    if((*tmp)->getup() && (*tmp)->getup()->getID()==Row){
+                        puts("1Q");
+                        treenode * up = (*tmp)->getup();
+                        power--;
+                        isRefresh(*tmp);
+                        cleanRow(&up,Row);
+                        (*tmp) = (*tmp)->getdown();
+                        power--;
+                        isRefresh(*tmp);
+
+                    }
+                    if((*tmp)->getdown() && (*tmp)->getdown()->getID() == Row){
+                        puts("G");
+                        treenode * down = (*tmp)->getdown();
+                        power--;
+                        isRefresh(*tmp);
+                        cleanRow(&down,Row);
+                        (*tmp) = (*tmp)->getup();
+                        power--;
+                        isRefresh(*tmp);
+                    }
+                        
+                }
+                (*tmp)->setcleaned(1);
+                while(back){
+                    back--;
+                    (*tmp)=(*tmp)->getleft();
+                    power--;
+                    isRefresh(*tmp);
+                }
+                return;
+            }*/ 
             
         }
 
         void backToNode(treenode ** tmp,int *buf,int count){
-            while(count){
-                count--;
+            //cout<<count;
+            while(count>=0){
                 power--;
                 if(buf[count] == 1){
-                    *tmp = (*tmp)->getup();
-                    buf[count]=0;
-                }
-                else if(buf[count]==2){
+                    puts("down");
                     *tmp = (*tmp)->getdown();
                     buf[count]=0;
                 }
-                else if(buf[count] == 3){
-                    *tmp = (*tmp)->getleft();
+                else if(buf[count]==2){
+                    puts("UP");
+                    *tmp = (*tmp)->getup();
                     buf[count]=0;
                 }
-                else{
+                else if(buf[count] == 3){
+                    puts("right");
                     *tmp = (*tmp)->getright();
                     buf[count]=0;
                 }
+                else{
+                    puts("left");
+                    *tmp = (*tmp)->getleft();
+                    buf[count]=0;
+                }
+                count--;
             }
+            return;
         }
 
         int backToRoot(treenode **tmp){
             static int count;
+            cout<<"CCC"<<endl;
             treenode *greatest = NULL;
             treenode *up = (*tmp)->getup();
             treenode *down = (*tmp)->getdown();
             treenode *left = (*tmp)->getleft();
             treenode* right = (*tmp)->getright();
+            //cout<<(*tmp)->getrow()<<endl;;
             while(!greatest){
-                if(up) {
+                if((*tmp)->getup() && (*tmp)->getcost()>=up->getcost()) {
                     greatest = up;
                 }
-                else if(down) {
+                else if((*tmp)->getdown() && (*tmp)->getcost()>=down->getcost()) {
+                    //puts("PP");
                     greatest = down;
                 }
-                else if(left) {
+                else if((*tmp)->getleft() && (*tmp)->getcost()>=left->getcost()) {
                     greatest = left;
                 }
-                else if(right) {
+                else if((*tmp)->getright()&& (*tmp)->getcost()>=right->getcost()) {
                     greatest = right;
                 }
             }
-            if(up){
-                if(up->getcost()<= greatest->getcost() && up->getclean() == 0){
-                    greatest = up;
-                    buf[count] = 1;
+            //cout<<greatest->getcost()<<greatest->getrow()<<greatest->getcol()<<endl;
+            if((*tmp)->getup()){
+                
+                if(up->getcost()<= greatest->getcost()){
+                    if(up->getclean()==greatest->getclean());
+                    else if(up->getclean() ==0 && greatest->getclean() ==1){
+                        greatest = up;
+                        //buf[count] = 1;
+                        //cout<<"EE1"<<"1"<<endl;
+                    }
+                    
                 }
             }
-            if(down){
-                if(down->getcost()<=greatest->getcost() && down->getclean() ==0){
-                    greatest = down;
-                    buf[count] = 2;
+            if((*tmp)->getdown()){
+                if(down->getcost()<=greatest->getcost()){
+                    if(down->getclean()==greatest->getclean());
+                    else if(down->getclean() ==0 && greatest->getclean() ==1){
+                        greatest = down;
+                        //buf[count] = 2;
+                        //cout<<"EE2"<<endl;
+                    }
                 }
             }
-            if(left){
-                if(left->getcost()<=greatest->getcost() && left->getclean() ==0){
-                    greatest = left;
-                    buf[count] = 3;
+            if((*tmp)->getleft()){
+                if(left->getcost()<=greatest->getcost()){
+                    if(left->getclean()==greatest->getclean());
+                    else if(left->getclean() ==0 && greatest->getclean() ==1){
+                        greatest = down;
+                        //buf[count] = 3;
+                        //cout<<"EE3"<<endl;
+                    }
                 }
             }
-            if(right){
-                if(right->getcost()<=greatest->getcost() && left->getclean()==0){
-                    greatest = right;
-                    buf[count] = 4;
+            if((*tmp)->getright()){
+                if(right->getcost()<=greatest->getcost()){
+                    if(right->getclean()==greatest->getclean());
+                    else if(right->getclean() ==0 && greatest->getclean() ==1){
+                        greatest = right;
+                        //buf[count] = 4;
+                       //cout<<"EE4"<<endl;
+                    }
                 }
             }
-            
+            if(greatest == (*tmp)->getup()){
+                buf[count] = 1;
+            }
+            else if(greatest == (*tmp)->getdown()){
+                buf[count] = 2;
+            }
+            else if(greatest == (*tmp)->getleft()){
+                buf[count] = 3;
+            }
+            else if(greatest == (*tmp)->getright()){
+                buf[count] = 4;
+            }
             *tmp = greatest;
+            //cout<<"QWERRTT"<<(*tmp)->getrow()<<(*tmp)->getcol()<<endl;
             greatest->setcleaned(1);
             power--;
             if(*tmp == cleaner){
                 power = powerFull;
-                return count;
+                //cout<<cleaner->getcost();
+                //cout<<buf[0]<<buf[1]<<endl;
+                int ans = count;
+                count = 0;
+                return ans;
             }
             count++;
-            backToRoot(tmp);
+            return backToRoot(tmp);
+            
         }
-
-        
-        bool iswall(treenode *a){
-            if(a->gettype() == 1){
-                return 1;
-            }
-            else if(a->gettype()==0) {
-                return 0;
->>>>>>> master
-            }
-        }
-
 };
 
 int main(){
-<<<<<<< HEAD
-    map m;
-=======
     //ifstream ifile("floor.data",ios::in);
     int width,heigh,power;
     char input[80];
@@ -626,27 +883,22 @@ int main(){
     cin>>width>>heigh>>power;
     int h = heigh;
     //cout<<heigh;
-    int matrix[heigh][width];
-    while(h){
-        h--;
+    char matrix[heigh][width];
         //fgets(input,sizeof(input),stdin);
-        for(int i=0;i<width;i++){
-
-            cin>>matrix[count][i];
-        }
-        //cout<<input;
-        count++;
-    }
     for(int i=0;i<width;i++){
+        for(int j=0;j<heigh;j++){
+            cin>>matrix[i][j];
+        }
+    }
+    /*for(int i=0;i<width;i++){
         for(int j = 0;j<heigh;j++){
             cout<<matrix[i][j]<<" ";
         }
         cout<<endl;
-    }
+    }*/
     
     
     map *mapping = new map(width,heigh,(char*)matrix);
-    //machine *Super_Hero = new machine(power);
-    //Super_Hero->clean(mapping);
->>>>>>> master
+    machine *Super_Hero = new machine(power);
+    Super_Hero->clean(mapping);
 }
