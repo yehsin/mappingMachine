@@ -255,7 +255,7 @@ class map{
             buildTravelTree();
             for(int i=0;i<heigh;i++){
                 for(int j = 0;j<width;j++){
-                    cout<<floor[i][j].ID<<setw(5);
+                    cout<<floor[i][j].cost<<setw(5);
                 }
                 cout<<endl;
             }
@@ -456,23 +456,21 @@ class machine{
             cleaner = tmp;
             int Row = tmp->getID();
             //cout<<Row<<endl;
-            while(Row > 0){
+            /*while(Row > 0){
                 cleanRow(&tmp,Row,floor);
                 puts("MINMIN");
                 Row--;
-            }
-            
+            }*/
+            cleanRow(&tmp,Row,floor);
             int home = backToRoot(&tmp);
             //cout<<tmp->getrow()<<" "<<power<<endl;
             puts("SS");
-            Row = tmp->getID()+1;
+            /*Row = tmp->getID()+1;
             while(Row<heigh){
                 cleanRow(&tmp,Row,floor);
-                //cout<<tmp->getID();
                 puts("OK!");
                 Row++;
-            }
-            //cout<<tmp->getrow()<<" "<<power<<endl;
+            }*/
             if(tmp->getcost() != 0){
                 home =backToRoot(&tmp);
             }
@@ -492,7 +490,7 @@ class machine{
         void cleanRow(treenode **tmp,int Row,map *floor){
             treenode *cur = *tmp;
             int uuu=0;
-            if(cur->getID()!= Row){
+            /*if(cur->getID()!= Row){
                 if(Row > cur->getID()){ //往下調
                     while(cur->getID() != Row){
                         if(cur->getdown() && cur->getdown()->getID() == Row){
@@ -519,7 +517,7 @@ class machine{
                         }
                         if(cur->getright() == NULL) return;
                     }
-                } 
+                }
 
                 else if(Row <cur->getID()){ // 往上調
                     while(cur->getID()!=Row){
@@ -546,24 +544,14 @@ class machine{
                     }
                 }
 
-            } 
+            }*/
             //調整到Row
             //先走左邊再走右邊//最後要回到一開始的點
             //如果遇到往上或往下=>走然後遞迴//走完回來
             
             treenode *record = cur;//記錄這個點
-            if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
-                cur = cur->getup();
-                cur->setcleaned(1);
-                power--;
-                stepCount++;
-                isRefresh(cur);
-                cleanRow(&cur,Row,floor);
-                cur = cur->getdown();
-                power--;
-                stepCount++;
-                isRefresh(cur);
-            }
+            
+            
             treenode *detect = record;
             int LeftIsClean = detectLeftAllClean(detect);
             //int RightIsClean = detectRightAllClean(detect);
@@ -579,30 +567,73 @@ class machine{
                         power = powerFull;
                     }
                     isRefresh(cur);
+                    puts("L");
                 }
             }
             while(cur != record){
-                if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 1){
-                        cur = cur->getup();
-                        cur->setcleaned(1);
-                        power--;
-                        stepCount++;
-                        if(cur == floor->Root){
-                            power = powerFull;
-                        }
-                        isRefresh(cur);
-
-                        cleanRow(&cur,Row,floor);
-                        cur = cur->getdown();
-                        power--;
-                        stepCount++;
-                        if(cur == floor->Root){
-                            power = powerFull;
-                        }
-                        isRefresh(cur);
-
+                if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
+                    puts("LBU=");
+                    cur = cur->getup();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
                     }
+                    isRefresh(cur);
+
+                    cleanRow(&cur,Row,floor);
+                    cur = cur->getdown();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                    
+                }
+                else if(cur->getup() && cur->getup()->getID()!=Row && cur->getup()->getclean() == 0){
+                    puts("LBU!");
+                    cur = cur->getup();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+
+                    cleanRow(&cur,cur->getup()->getID(),floor);
+                     cur = cur->getdown();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                }
                 if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() == 0){
+                    puts("LBD=");
+                    cur = cur->getup();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+
+                    cleanRow(&cur,Row,floor);
+                    cur = cur->getdown();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                }
+                else if(cur->getdown() && cur->getdown()->getID()!=Row && cur->getdown()->getclean()==0){
+                    puts("LBD!");
                     cur = cur->getdown();
                     cur->setcleaned(1);
                     power--;
@@ -629,10 +660,12 @@ class machine{
                 }
                 isRefresh(cur);
             }
+            
             detect = record;
             int RightIsClean = detectRightAllClean(detect);
             cout<<record->getrow()<<" "<<record->getcol()<<endl;
             if(cur->getright() && cur->getright()->getID() == Row && RightIsClean ==1){
+                puts("R");
                 while(cur->getright()){
                     cur = cur->getright();
                     cur->setcleaned(1);
@@ -649,26 +682,48 @@ class machine{
                 
 
                 if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
-                        cur = cur->getup();
-                        cur->setcleaned(1);
-                        power--;
-                        stepCount++;
-                        if(cur == floor->Root){
+                    puts("RBU=");
+                    cur = cur->getup();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
                         power = powerFull;
                     }
-                        isRefresh(cur);
+                    isRefresh(cur);
 
-                        cleanRow(&cur,Row,floor);
-                        cur = cur->getdown();
-                        power--;
-                        stepCount++;
-                        if(cur == floor->Root){
+                    cleanRow(&cur,Row,floor);
+                    cur = cur->getdown();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
                         power = powerFull;
                     }
-                        isRefresh(cur);
+                    isRefresh(cur);
 
+                }
+                else if(cur->getup() && cur->getup()->getID()!=Row && cur->getup()->getclean() == 0){
+                    puts("RBU!");
+                    cur = cur->getup();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
                     }
+                    isRefresh(cur);
+                    //puts("Q");
+                    cleanRow(&cur,cur->getup()->getID(),floor);
+                    cur = cur->getdown();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                }
                 if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() == 0){
+                    puts("RBD=");
                     cur = cur->getdown();
                     cur->setcleaned(1);
                     power--;
@@ -687,6 +742,27 @@ class machine{
                     }
                     isRefresh(cur);
                 }
+                else if(cur->getdown() && cur->getdown()->getID()!=Row && cur->getdown()->getclean()==0){
+                    puts("RBD!");
+                    cur = cur->getdown();
+                    cur->setcleaned(1);
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                    puts("A");
+                    cleanRow(&cur,Row,floor);
+                    cur = cur->getup();
+                    power--;
+                    stepCount++;
+                    if(cur == floor->Root){
+                        power = powerFull;
+                    }
+                    isRefresh(cur);
+                    puts("W");
+                }
                 cur = cur->getleft();
                 power--;
                 stepCount++;
@@ -695,7 +771,36 @@ class machine{
                 }
                 isRefresh(cur);
             }
+            if(cur->getup() && cur->getup()->getID() == Row && cur->getup()->getclean() == 0){
+                puts("U=");
+                cur = cur->getup();
+                cur->setcleaned(1);
+                power--;
+                stepCount++;
+                isRefresh(cur);
+                cleanRow(&cur,Row,floor);
+                cur = cur->getdown();
+                power--;
+                stepCount++;
+                isRefresh(cur);
+            }
+            else if(cur->getup() && cur->getup()->getID() !=Row && cur->getup()->getclean() == 0){
+                cout<<cur->getID();
+                puts("U!");
+                cur = cur->getup();
+                cur->setcleaned(1);
+                power--;
+                stepCount++;
+                isRefresh(cur);
+                cleanRow(&cur,cur->getID(),floor);
+                cur = cur->getdown();
+                power--;
+                stepCount++;
+                isRefresh(cur);
+            }
             if(cur->getdown() && cur->getdown()->getID() == Row && cur->getdown()->getclean() ==0){
+                cout<<Row<<" "<<cur->getID()<<" "<<cur->getdown()->getID();
+                puts("D=");
                 cur = cur->getdown();
                 cur->setcleaned(1);
                 power--;
@@ -713,8 +818,28 @@ class machine{
                 }
                 isRefresh(cur);
             }
+            else if(cur->getdown() && cur->getdown()->getID() != Row && cur->getdown()->getclean() ==0){
+                cout<<Row<<" "<<cur->getID()<<" "<<cur->getdown()->getID();
+                puts("D!");
+                cur = cur->getdown();
+                cur->setcleaned(1);
+                power--;
+                stepCount++;
+                if(cur == floor->Root){
+                    power = powerFull;
+                }
+                isRefresh(cur);
+                cleanRow(&cur,cur->getID(),floor);
+                cur = cur->getup();
+                power--;
+                stepCount++;
+                if(cur == floor->Root){
+                    power = powerFull;
+                }
+                isRefresh(cur);
+            }
             *tmp = cur;
-            
+            return;
         }
 
         int detectLeftAllClean(treenode*tmp){
