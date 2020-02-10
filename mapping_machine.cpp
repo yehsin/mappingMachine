@@ -173,7 +173,6 @@ class map{
             notCleanBuf = new int[m*n];
             width = n;
             heigh = m;
-            //build_floor(arr);
 
             char matrix[heigh][width];
             for(int i=0;i<heigh;i++){
@@ -269,12 +268,12 @@ class map{
             }
             BSF(&Root,0);
             buildTravelTree();
-            /*for(int i=0;i<heigh;i++){
+            for(int i=0;i<heigh;i++){
                 for(int j = 0;j<width;j++){
-                    cout<<floor[i][j].getID()<<setw(2);
+                    cout<<floor[i][j].getID()<<setw(4);
                 }
                 cout<<endl;
-            }*/
+            }
         }
         void BSF(treenode ** a,int cost){
             (*a)->setcost(cost);
@@ -448,20 +447,22 @@ class machine{
             
             int heigh = floor->getheigh();
             int width= floor->getwidth();
-            int row=0;
-            int columns =0;
+
             treenode* tmp = floor->Root;
             tmp->setcleaned(1);
             cleaner = tmp;
             output = new queue(cleaner);
             int Row = tmp->getID();
             cleanRow(&tmp,Row,floor);
-            int home = backToRoot(&tmp);
-            if(tmp->getcost() != 0){
+
+            int home = backToRoot(&tmp); // BACK TO R
+
+            if(tmp->getcost() != 0){ //when it not at R
                 home =backToRoot(&tmp);
             }
+
             outfile<<stepCount<<endl;
-            queue* print = output->getRoot();
+            queue* print = output->getRoot(); //To store the road which it have traveled
             while(print){
                 outfile << print->getcontent()->getrow() <<" "<< print->getcontent()->getcol()<<endl;
                 print = print->getnext();
@@ -476,7 +477,6 @@ class machine{
 
         void isRefresh(treenode*tmp){
             //cout<<tmp->getrow()<<" "<<tmp->getcol()<<" "<<power<<" "<<tmp->getcost()<<endl;
-            //outfile<<tmp->getrow()<<" "<<tmp->getcol()<<" "<<power<<endl;
             output->push(tmp);
             if(tmp->getcost() >= power){
                 int step = backToRoot(&tmp);
@@ -486,9 +486,9 @@ class machine{
 
         void cleanRow(treenode **tmp,int Row,map *floor){
             treenode *cur = *tmp;
-            //調整到Row
             //先走左邊再走右邊//最後要回到一開始的點
-            //如果遇到往上或往下=>走然後遞迴//走完回來
+            //如果遇到往上或往下=>走然後遞迴
+            //走完回來
             treenode *record = cur;//記錄這個點
             treenode *detect = record;
 
