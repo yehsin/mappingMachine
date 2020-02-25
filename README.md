@@ -27,5 +27,6 @@ mappingMachine
 1 0 0 0 1 0 0 0 0 1</br>
 1 0 1 1 1 1 1 1 0 1</br>
 1 0 0 0 0 0 0 0 0 1</br>
-1 1 1 1 R 1 1 1 1 1
+1 1 1 1 R 1 1 1 1 1</br>
+This case describes a floorplan with cells of 7 rows and 10 columns. The battery life allows the robot to move 30 steps for each fully charged run. We assume the row index and column index all starts from 0. Therefore, initially the robot is placed at cell (6, 4). Note that R can be at any, but only one, location.
 
