@@ -19,3 +19,13 @@ mappingMachine
     6. Needs to return for recharge before running out battery. Each recharge fully restores the battery life “B”.
     7. After cleaning all free cells, needs to return to the cell “R” for recharge.
 
+### Example
+7 10 30</br>
+1 1 1 1 1 1 1 1 1 1</br>
+1 0 0 0 1 0 0 0 0 1</br>
+1 0 0 0 1 0 0 0 0 1</br>
+1 0 0 0 1 0 0 0 0 1</br>
+1 0 1 1 1 1 1 1 0 1</br>
+1 0 0 0 0 0 0 0 0 1</br>
+1 1 1 1 R 1 1 1 1 1
+
