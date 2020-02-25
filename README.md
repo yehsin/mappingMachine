@@ -39,4 +39,5 @@ robot.</br></br>
 5 6</br>
 5 5</br>
 5 4</br>
-6 4
+6 4</br>
+This example shows that the robot moves 6 steps. TAs will verify whether your solution is valid according to the following rules. Any invalid solution receives no score.
