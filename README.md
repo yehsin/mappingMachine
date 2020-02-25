@@ -8,8 +8,9 @@ mappingMachine
     - You are to design an optimal floor cleaning algorithm to drive the robot. The floorplan is described as an 𝑚 ∗ 𝑛 matrix, in which each cell is marked with one the following status.
     1. “1” indicates an obstacle, which normally is a wall.
     2. “0” indicates a free space to be cleaned.
-    3. “R” indicates where the robot is placed initially. This is also where the robot can be recharged.</br>
-    - **strong**The robot is to follow these rules
+    3. “R” indicates where the robot is placed initially. This is also where the robot can be recharged.
+    </br>
+    - __The robot is to follow these rules__
     1. Always starts from the cell marked “R”.
     2. Needs to clean every free cell “0” on the floor.
     3. Cannot move into or cross any obstacle cell “1” or move outside the floor boundary.
