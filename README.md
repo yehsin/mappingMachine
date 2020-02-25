@@ -27,9 +27,9 @@ mappingMachine
 1 0 0 0 1 0 0 0 0 1</br>
 1 0 1 1 1 1 1 1 0 1</br>
 1 0 0 0 0 0 0 0 0 1</br>
-1 1 1 1 R 1 1 1 1 1</br>
+1 1 1 1 R 1 1 1 1 1</br></br>
 This case describes a floorplan with cells of 7 rows and 10 columns. The battery life allows the robot to move 30 steps for each fully charged run. We assume the row index and column index all starts from 0. Therefore, initially the robot is placed at cell (6, 4). Note that R can be at any, but only one, location.</br></br>
-#### Result output file
+### Result output file
 Output your optimized final floor cleaning path into a file named “final.path”. The first line should be the number of steps your algorithm used to finish the cleaning task and for the following lines, each should have two numbers i an j, representing the cell (i, j) walked subsequently by the cleaning
 robot.</br></br>
 
@@ -39,5 +39,5 @@ robot.</br></br>
 5 6</br>
 5 5</br>
 5 4</br>
-6 4</br>
+6 4</br></br>
 This example shows that the robot moves 6 steps. TAs will verify whether your solution is valid according to the following rules. Any invalid solution receives no score.
