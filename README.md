@@ -2,5 +2,5 @@
 ## 資料結構 project2 掃地機器人
 
 - Rule
- - hi
- - test
+    - hi
+    - test
