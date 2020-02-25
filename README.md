@@ -9,7 +9,7 @@ mappingMachine
     1. “1” indicates an obstacle, which normally is a wall.
     2. “0” indicates a free space to be cleaned.
     3. “R” indicates where the robot is placed initially. This is also where the robot can be recharged.</br>
-    - **string**The robot is to follow these rules
+    - **strong**The robot is to follow these rules
     1. Always starts from the cell marked “R”.
     2. Needs to clean every free cell “0” on the floor.
     3. Cannot move into or cross any obstacle cell “1” or move outside the floor boundary.
